@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JACK INTERNATIONAL SRI LANKA SPM & MSM</title>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0a0d14',
+                            surface: 'rgba(18, 24, 38, 0.85)',
+                            border: 'rgba(245, 158, 11, 0.25)'
+                        },
+                        primary: {
+                            400: '#fde047',
+                            500: '#f59e0b',
+                            600: '#d97706'
+                        },
+                        accent: '#fbbf24'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- Dexie.js for IndexedDB (Local Storage) -->
+    <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Glassmorphism & UI Styles in Warm Yellow & Matte Black -->
+    <style>
+        .glass-effect {
+            background: rgba(18, 22, 31, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            box-shadow: 0 10px 35px 0 rgba(0, 0, 0, 0.6);
+        }
+
+        .input-field {
+            width: 100%;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            background: rgba(11, 15, 23, 0.9);
+            padding: 0.65rem 1rem;
+            font-size: 0.875rem;
+            color: #f8fafc;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            color: #0b0f17;
+            font-weight: 700;
+            transition: all 0.25s ease;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .active-nav {
+            background: rgba(245, 158, 11, 0.15) !important;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .active-nav span {
+            color: #fbbf24 !important;
+            font-weight: 700;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(11, 15, 23, 0.8); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(245, 158, 11, 0.6); }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-[#080b11] via-[#0f1420] to-[#0a0d14] text-slate-100 font-sans h-screen flex overflow-hidden selection:bg-[#fbbf24] selection:text-black relative">
+
+    <!-- Login Auth Screen -->
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-[#080b11] flex items-center justify-center bg-gradient-to-br from-[#080b11] via-[#111726] to-[#0a0d14] transition-opacity duration-500">
+        <div class="glass-effect p-8 rounded-3xl w-full max-w-md border border-[#fbbf24]/30 shadow-2xl flex flex-col relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#fbbf24]/10 to-transparent pointer-events-none opacity-50"></div>
+            <div class="text-center mb-8 relative z-10 block">
+                <div id="login-logo-container" onclick="triggerLogoUpload('system_logo')" title="Upload System Logo" class="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#fbbf24] to-[#d97706] flex items-center justify-center shadow-lg shadow-[#fbbf24]/30 mx-auto mb-5 transform group-hover:scale-105 transition-transform cursor-pointer relative overflow-hidden">
+                    <span id="login-logo-icon" class="material-icons-round text-black font-bold text-4xl">precision_manufacturing</span>
+                    <img id="login-logo-img" src="" class="hidden w-full h-full object-cover absolute inset-0 rounded-2xl">
+                </div>
+                <h2 class="text-2xl font-black tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#fde047] via-[#fbbf24] to-[#f59e0b]">
+                    JACK INTERNATIONAL <br> SRI LANKA</h2>
+                <p class="text-xs text-amber-300 mt-1 uppercase tracking-widest font-semibold">Spare Parts & Machine Management</p>
+            </div>
+
+            <form id="form-login" onsubmit="handleLoginSubmit(event)" autocomplete="off" class="space-y-5 relative z-10 w-full block">
+                <div>
+                    <label class="block text-xs font-medium text-amber-200/90 mb-1.5 ml-1">Username</label>
+                    <div class="relative">
+                        <span class="material-icons-round absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-400/70 text-sm">person</span>
+                        <select id="login-username" required class="input-field pl-10 pr-10 bg-[#0c101a] border-[#fbbf24]/30 focus:border-[#fbbf24] text-white appearance-none cursor-pointer">
+                            <option value="" disabled selected>Select your account</option>
+                            <!-- Users will be loaded here automatically -->
+                        </select>
+                        <span class="material-icons-round absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400/70 text-sm pointer-events-none">arrow_drop_down</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-amber-200/90 mb-1.5 ml-1">Password</label>
+                    <div class="relative">
+                        <span class="material-icons-round absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-400/70 text-sm">lock</span>
+                        <input type="password" id="login-password" value="" required autocomplete="new-password" class="input-field pl-10 pr-10 bg-[#0c101a] border-[#fbbf24]/30 focus:border-[#fbbf24] text-white" placeholder="Enter password">
+                        <span id="toggle-pw" onclick="togglePassword()" class="material-icons-round absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400/70 text-sm cursor-pointer hover:text-amber-300 transition-colors">visibility</span>
+                    </div>
+                </div>
+                <button type="submit" id="btn-login-submit" class="w-full btn-primary py-3 rounded-xl font-bold shadow-lg shadow-[#fbbf24]/20 mt-4 hover:scale-[1.02] transition-transform flex justify-center items-center">
+                    Sign In <span class="material-icons-round ml-2 text-sm">arrow_forward</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sidebar Wrapper -->
+    <aside class="w-20 lg:w-64 glass-effect border-r border-[#fbbf24]/20 flex flex-col transition-all duration-300 z-20">
+        <div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-[#fbbf24]/20">
+            <div id="sidebar-logo-container" onclick="triggerLogoUpload('system_logo')" title="Upload System Logo" class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#fbbf24] to-[#d97706] flex items-center justify-center shadow-lg shadow-[#fbbf24]/30 cursor-pointer relative overflow-hidden">
+                <span id="sidebar-logo-icon" class="material-icons-round text-black font-bold">precision_manufacturing</span>
+                <img id="sidebar-logo-img" src="" class="hidden w-full h-full object-cover absolute inset-0 rounded-xl">
+            </div>
+            <div class="ml-3 hidden lg:flex lg:flex-col justify-center">
+                <span class="text-base font-bold text-white tracking-wide leading-tight">JACK INTL.</span>
+                <span class="text-[10px] text-amber-400 uppercase tracking-wider font-semibold">Spare & Machines</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-6 px-3 lg:px-4 space-y-2 flex flex-col">
+            <button onclick="nav('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 lg:py-3 rounded-xl transition-all active-nav group">
+                <span class="material-icons-round text-slate-400 group-hover:text-amber-300 transition-colors">dashboard</span>
+                <span class="ml-3 font-medium hidden lg:block text-slate-200">Dashboard</span>
+            </button>
+            
+            <button onclick="nav('inventory')" id="nav-inventory" class="nav-item w-full flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 lg:py-3 rounded-xl transition-all group hover:bg-[#fbbf24]/10">
+                <span class="material-icons-round text-slate-400 group-hover:text-amber-300 transition-colors">inventory_2</span>
+                <span class="ml-3 font-medium hidden lg:block text-slate-300 group-hover:text-amber-300 transition-colors">Spare Parts</span>
+            </button>
+
+            <button onclick="nav('machines')" id="nav-machines" class="nav-item w-full flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 lg:py-3 rounded-xl transition-all group hover:bg-[#fbbf24]/10">
+                <span class="material-icons-round text-slate-400 group-hover:text-amber-300 transition-colors">precision_manufacturing</span>
+                <span class="ml-3 font-medium hidden lg:block text-slate-300 group-hover:text-amber-300 transition-colors">Machine Stock</span>
+            </button>
+
+            <button onclick="nav('transactions')" id="nav-transactions" class="nav-item w-full flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 lg:py-3 rounded-xl transition-all group hover:bg-[#fbbf24]/10">
+                <span class="material-icons-round text-slate-400 group-hover:text-amber-300 transition-colors">swap_horiz</span>
+                <span class="ml-3 font-medium hidden lg:block text-slate-300 group-hover:text-amber-300 transition-colors">Transactions</span>
+            </button>
+
+            <hr class="border-[#fbbf24]/20 my-2" id="admin-nav-divider">
+            <button onclick="nav('users')" id="nav-users" class="nav-item w-full flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 lg:py-3 rounded-xl transition-all group hover:bg-[#fbbf24]/10">
+                <span class="material-icons-round text-slate-400 group-hover:text-amber-300 transition-colors">security</span>
+                <span class="ml-3 font-medium hidden lg:block text-slate-300 group-hover:text-amber-300 transition-colors">User Access</span>
+            </button>
+
+            <!-- Backup & Restore Button -->
+            <div class="mt-auto pt-4">
+                <button onclick="openModal('syncModal')" class="w-full flex items-center justify-center lg:justify-start px-3 py-3 lg:px-4 lg:py-3 rounded-xl transition-all group border border-[#fbbf24]/30 hover:bg-[#fbbf24]/10 bg-[#fbbf24]/5">
+                    <span class="material-icons-round text-amber-400 group-hover:text-amber-300 transition-colors">cloud_sync</span>
+                    <span class="ml-3 font-bold hidden lg:block text-amber-400 group-hover:text-amber-300 transition-colors">Backup / Sync</span>
+                </button>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-[#fbbf24]/20 hidden lg:block">
+            <div class="glass-effect p-4 rounded-xl relative overflow-hidden group cursor-pointer hover:bg-red-500/10 transition-colors" onclick="logout()">
+                <div class="absolute inset-0 bg-gradient-to-r from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="flex items-center text-red-400 group-hover:text-red-300">
+                    <span class="material-icons-round mr-2 text-sm">power_settings_new</span>
+                    <span class="text-sm font-semibold">Secure Logout</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <!-- Top bar -->
+        <header class="h-20 glass-effect border-b border-[#fbbf24]/20 px-6 flex items-center justify-between z-10">
+            <h2 id="page-title" class="text-2xl font-bold tracking-tight text-white">Dashboard Overview</h2>
+
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3 pl-4 border-l border-[#fbbf24]/20">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold text-white tracking-wide" id="header-user-name">Administrator</p>
+                        <p class="text-xs text-amber-400 font-medium capitalize" id="header-user-role">admin</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#fbbf24] to-[#d97706] flex items-center justify-center border border-[#fbbf24]/30 shadow-lg cursor-pointer lg:hidden" onclick="logout()" title="Logout">
+                        <span class="material-icons-round text-black text-sm">power_settings_new</span>
+                    </div>
+                    <div id="header-avatar-container" onclick="triggerAvatarUpload()" title="Change Profile Picture" class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#fbbf24] to-[#d97706] hidden lg:flex items-center justify-center border border-[#fbbf24]/30 shadow-lg cursor-pointer relative overflow-hidden">
+                        <span id="header-avatar-icon" class="material-icons-round text-black font-bold">shield_person</span>
+                        <img id="header-avatar-img" src="" class="hidden w-full h-full object-cover absolute inset-0 rounded-full">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Pages Container -->
+        <div class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8 relative custom-scrollbar section-fade" id="content-area">
+
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="page-view block space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="stat-card glass-effect rounded-2xl p-6 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-15 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                            <span class="material-icons-round text-6xl text-amber-400">category</span>
+                        </div>
+                        <p class="text-sm text-slate-400 font-medium mb-1">Total Unique Parts</p>
+                        <h3 class="text-3xl font-black text-amber-300 mb-2" id="stat-total-parts">0</h3>
+                    </div>
+
+                    <div class="stat-card glass-effect rounded-2xl p-6 relative overflow-hidden group" style="animation-delay: 0.1s;">
+                        <div class="absolute top-0 right-0 p-4 opacity-15 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                            <span class="material-icons-round text-6xl text-emerald-400">inventory</span>
+                        </div>
+                        <p class="text-sm text-slate-400 font-medium mb-1">Total Stock Items</p>
+                        <h3 class="text-3xl font-black text-white mb-2" id="stat-total-stock">0</h3>
+                    </div>
+
+                    <div class="stat-card glass-effect rounded-2xl p-6 relative overflow-hidden group" style="animation-delay: 0.2s;">
+                        <div class="absolute top-0 right-0 p-4 opacity-15 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                            <span class="material-icons-round text-6xl text-rose-400">warning</span>
+                        </div>
+                        <p class="text-sm text-slate-400 font-medium mb-1">Low Stock Alerts</p>
+                        <h3 class="text-3xl font-black text-rose-400 mb-2" id="stat-low-stock">0</h3>
+                    </div>
+
+                    <div class="stat-card glass-effect rounded-2xl p-6 relative overflow-hidden group" style="animation-delay: 0.3s;">
+                        <div class="absolute top-0 right-0 p-4 opacity-15 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                            <span class="material-icons-round text-6xl text-amber-400">precision_manufacturing</span>
+                        </div>
+                        <p class="text-sm text-slate-400 font-medium mb-1">Machines in Warehouse</p>
+                        <h3 class="text-3xl font-black text-amber-400 mb-2" id="stat-machines-in-stock">0</h3>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-effect rounded-2xl p-6 border border-[#fbbf24]/20">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-white">Stock Movement</h3>
+                        </div>
+                        <div class="h-64 sm:h-80 w-full relative">
+                            <canvas id="movementChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-6 border border-[#fbbf24]/20 flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-white">Low Stock Items</h3>
+                            <button onclick="nav('inventory')" class="text-xs text-amber-400 font-semibold hover:text-amber-300 transition-colors">View All</button>
+                        </div>
+                        <div class="flex-1 overflow-auto custom-scrollbar pr-2" id="low-stock-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory View -->
+            <div id="view-inventory" class="page-view hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="relative w-full sm:w-96">
+                        <span class="material-icons-round absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">search</span>
+                        <input type="text" id="search-part" oninput="renderInventoryTable()" placeholder="Search part number or name..." class="w-full bg-[#0c101a] border border-[#fbbf24]/20 text-white rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#fbbf24] transition-all">
+                    </div>
+                    <button onclick="openModal('addPartModal')" class="btn-primary w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold flex items-center justify-center transition-all shadow-lg shadow-[#fbbf24]/20">
+                        <span class="material-icons-round mr-2 text-sm font-bold">add</span> Add New Part
+                    </button>
+                </div>
+
+                <div class="glass-effect rounded-2xl border border-[#fbbf24]/20 overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#fbbf24]/10 text-amber-300 text-sm border-b border-[#fbbf24]/20 whitespace-nowrap">
+                                    <th class="px-6 py-4 font-semibold">Part Details</th>
+                                    <th class="px-6 py-4 font-semibold">Category</th>
+                                    <th class="px-6 py-4 font-semibold text-right">In Stock</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Min Level</th>
+                                    <th class="px-6 py-4 font-semibold text-center">Status</th>
+                                    <th class="px-6 py-4 font-semibold text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body" class="divide-y divide-amber-400/10 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Machine Stock View -->
+            <div id="view-machines" class="page-view hidden space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="stat-card glass-effect rounded-2xl p-5 border border-[#fbbf24]/20 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs uppercase font-semibold text-slate-400">Total Machinery</p>
+                            <h4 class="text-2xl font-black mt-1 text-white" id="mach-stat-total">0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-400/15 flex items-center justify-center text-amber-400 border border-amber-400/30">
+                            <span class="material-icons-round">precision_manufacturing</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-effect rounded-2xl p-5 border border-emerald-500/20 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs uppercase font-semibold text-emerald-400">In Stock (Warehouse)</p>
+                            <h4 class="text-2xl font-black mt-1 text-emerald-400" id="mach-stat-in-stock">0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400 border border-emerald-500/30">
+                            <span class="material-icons-round">warehouse</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-effect rounded-2xl p-5 border border-[#fbbf24]/20 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs uppercase font-semibold text-amber-200">Issued / Out (Client)</p>
+                            <h4 class="text-2xl font-black mt-1 text-amber-300" id="mach-stat-issued">0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-400/15 flex items-center justify-center text-amber-300 border border-amber-400/30">
+                            <span class="material-icons-round">local_shipping</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-effect rounded-2xl p-5 border border-amber-600/30 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs uppercase font-semibold text-amber-500">Under Repair / Service</p>
+                            <h4 class="text-2xl font-black mt-1 text-amber-500" id="mach-stat-repair">0</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-600/15 flex items-center justify-center text-amber-500 border border-amber-600/30">
+                            <span class="material-icons-round">build_circle</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex flex-wrap sm:flex-nowrap gap-3 w-full sm:w-auto flex-1">
+                        <div class="relative flex-1 sm:w-80">
+                            <span class="material-icons-round absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">search</span>
+                            <input type="text" id="search-machine" oninput="renderMachineTable()" placeholder="Search serial number, model, customer..." class="w-full bg-[#0c101a] border border-[#fbbf24]/20 text-white rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#fbbf24] transition-all text-sm">
+                        </div>
+                        <select id="filter-machine-status" onchange="renderMachineTable()" class="bg-[#0c101a] border border-[#fbbf24]/20 text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#fbbf24]">
+                            <option value="all">All Statuses</option>
+                            <option value="In Stock">In Warehouse (Stock)</option>
+                            <option value="Issued">Issued / Dispatched (OUT)</option>
+                            <option value="Maintenance">Under Maintenance</option>
+                        </select>
+                        <select id="filter-machine-type" onchange="renderMachineTable()" class="bg-[#0c101a] border border-[#fbbf24]/20 text-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#fbbf24]">
+                            <option value="all">All Machine Categories</option>
+                            <option value="Sewing Machine">Industrial Sewing Machine</option>
+                            <option value="Overlock">Overlock Machine</option>
+                            <option value="Pattern Sewer">Computerized Pattern Sewer</option>
+                            <option value="Cutting Machine">Cloth Cutting Machine</option>
+                            <option value="Other">Other Machine</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button onclick="openModal('addMachineModal')" class="btn-primary w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold flex items-center justify-center transition-all shadow-lg shadow-[#fbbf24]/20 text-sm whitespace-nowrap">
+                            <span class="material-icons-round mr-2 text-sm font-bold">add_circle</span> Add Machine
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-2xl border border-[#fbbf24]/20 overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#fbbf24]/10 text-amber-300 text-sm border-b border-[#fbbf24]/20 whitespace-nowrap">
+                                    <th class="px-6 py-4 font-semibold">Machine Model & Name</th>
+                                    <th class="px-6 py-4 font-semibold">Serial Number</th>
+                                    <th class="px-6 py-4 font-semibold">Type</th>
+                                    <th class="px-6 py-4 font-semibold">Current Status</th>
+                                    <th class="px-6 py-4 font-semibold">Location / Assigned Client</th>
+                                    <th class="px-6 py-4 font-semibold text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="machine-table-body" class="divide-y divide-amber-400/10 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions View -->
+            <div id="view-transactions" class="page-view hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h3 class="text-xl font-bold text-white">Activity Log</h3>
+                    <div class="flex space-x-2">
+                        <select id="filter-type" onchange="renderTransactions()" class="bg-[#0c101a] border border-[#fbbf24]/20 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#fbbf24] transition-all text-sm">
+                            <option value="all">All Movements</option>
+                            <option value="in">Receiving (IN)</option>
+                            <option value="out">Issuing (OUT)</option>
+                            <option value="machine">Machine Events</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-2xl border border-[#fbbf24]/20 p-4 sm:p-6 lg:p-8">
+                    <div class="relative pl-8 space-y-6 before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#fbbf24]/30 before:to-transparent" id="timeline-container"></div>
+                </div>
+            </div>
+
+            <!-- Users Management View -->
+            <div id="view-users" class="page-view hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h3 class="text-xl font-bold text-white">System Access Governance</h3>
+                    <button onclick="openModal('addUserModal')" class="btn-primary w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold flex items-center justify-center transition-all shadow-lg shadow-[#fbbf24]/20">
+                        <span class="material-icons-round mr-2 text-sm font-bold">person_add</span> Generate User Profile
+                    </button>
+                </div>
+                <div class="glass-effect rounded-2xl border border-[#fbbf24]/20 overflow-hidden">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#fbbf24]/10 text-amber-300 text-sm border-b border-[#fbbf24]/20 whitespace-nowrap">
+                                    <th class="px-6 py-4 font-semibold">Username</th>
+                                    <th class="px-6 py-4 font-semibold">Role Level</th>
+                                    <th class="px-6 py-4 font-semibold">Registered On</th>
+                                    <th class="px-6 py-4 font-semibold text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body" class="divide-y divide-amber-400/10 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modals Backdrop -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/85 backdrop-blur-md z-40 hidden opacity-0 transition-opacity duration-300"></div>
+
+    <!-- Data Backup & Sync Modal (GOOGLE SHEETS CLOUD) -->
+    <div id="syncModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-0 opacity-0 transform scale-95 transition-all duration-300">
+        <div class="glass-effect border border-[#fbbf24]/30 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-[#fbbf24]/20 flex justify-between items-center bg-[#fbbf24]/10">
+                <h3 class="text-lg font-bold text-white flex items-center"><span class="material-icons-round text-amber-400 mr-2">cloud</span> Google Cloud Sync</h3>
+                <button onclick="closeModal('syncModal')" class="text-slate-400 hover:text-white transition-colors"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <!-- API URL Setup -->
+                <div>
+                    <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Google Cloud Web App URL</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="cloud-api-url" class="input-field text-xs" placeholder="https://script.google.com/macros/s/.../exec">
+                        <button onclick="saveCloudUrl()" class="bg-amber-500 hover:bg-amber-400 text-black px-3 py-2 rounded-xl text-xs font-bold transition-colors shadow-md">Save</button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1.5">* Save your Google Apps Script URL here once.</p>
+                </div>
+                
+                <hr class="border-[#fbbf24]/20">
+
+                <div class="bg-amber-400/10 border border-amber-400/30 p-4 rounded-xl">
+                    <h4 class="text-amber-400 font-bold mb-1 text-sm">1. Push Data to Cloud (Save)</h4>
+                    <p class="text-[11px] text-slate-300 mb-3">ඔබ ඇතුළත් කළ අලුත් දත්ත Google Sheet එක වෙත යවන්න.</p>
+                    <button onclick="syncToCloud()" class="w-full btn-primary py-2.5 rounded-xl text-sm font-bold flex items-center justify-center shadow-lg">
+                        <span class="material-icons-round mr-2 text-sm">cloud_upload</span> Push to Cloud
+                    </button>
+                </div>
+                <div class="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl">
+                    <h4 class="text-emerald-400 font-bold mb-1 text-sm">2. Pull Data from Cloud (Load)</h4>
+                    <p class="text-[11px] text-slate-300 mb-3">අනෙකුත් උපාංග වලින් Google Sheet එකට දැමූ අලුත් දත්ත ලබාගන්න.</p>
+                    <button onclick="syncFromCloud()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center shadow-lg transition-colors">
+                        <span class="material-icons-round mr-2 text-sm">cloud_download</span> Pull from Cloud
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rest of the Modals (Add Part, Machine, Movement, User, Transact) -->
+    <!-- Add Part Modal -->
+    <div id="addPartModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-0 opacity-0 transform scale-95 transition-all duration-300">
+        <div class="glass-effect border border-[#fbbf24]/30 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-[#fbbf24]/20 flex justify-between items-center bg-[#fbbf24]/10">
+                <h3 class="text-lg font-bold text-white flex items-center"><span class="material-icons-round text-amber-400 mr-2">add_box</span> Add New Spare Part</h3>
+                <button onclick="closeModal('addPartModal')" class="text-slate-400 hover:text-white transition-colors"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar">
+                <form id="form-add-part" onsubmit="handlePartSubmit(event)" class="space-y-5">
+                    <div class="grid grid-cols-2 gap-5">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Part Name</label>
+                            <input type="text" id="add-name" required class="input-field" placeholder="e.g. Jack Rotary Hook Assembly">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Part Number</label>
+                            <input type="text" id="add-partNum" required class="input-field" placeholder="e.g. JK-RH-001">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Category</label>
+                            <select id="add-category" class="input-field cursor-pointer">
+                                <option value="Mechanical">Mechanical</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Hydraulic">Hydraulic</option>
+                                <option value="Consumable">Consumable</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Initial Stock Quantity</label>
+                            <input type="number" id="add-stock" required min="0" class="input-field" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Min. Alert Threshold</label>
+                            <input type="number" id="add-minStock" required min="1" class="input-field" placeholder="5">
+                        </div>
+                    </div>
+                    <div class="pt-6 mt-4 border-t border-[#fbbf24]/20 flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('addPartModal')" class="px-5 py-2.5 rounded-xl text-sm font-medium border border-[#fbbf24]/20 text-slate-300 hover:bg-[#fbbf24]/10 transition-colors">Cancel</button>
+                        <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#fbbf24]/20 flex items-center">Save Item <span class="material-icons-round ml-2 text-sm font-bold">save</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add New Machine -->
+    <div id="addMachineModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-0 opacity-0 transform scale-95 transition-all duration-300">
+        <div class="glass-effect border border-[#fbbf24]/30 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-[#fbbf24]/20 flex justify-between items-center bg-[#fbbf24]/10">
+                <h3 class="text-lg font-bold text-white flex items-center"><span class="material-icons-round text-amber-400 mr-2">precision_manufacturing</span> Register New Machine</h3>
+                <button onclick="closeModal('addMachineModal')" class="text-slate-400 hover:text-white transition-colors"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar">
+                <form id="form-add-machine" onsubmit="handleMachineSubmit(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Machine Model / Description</label>
+                            <input type="text" id="add-mach-model" required class="input-field" placeholder="e.g. Jack A4F Direct Drive Lockstitch">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Serial Number (Unique)</label>
+                            <input type="text" id="add-mach-serial" required class="input-field font-mono uppercase" placeholder="e.g. SN-JK-2026-098">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Machine Type</label>
+                            <select id="add-mach-type" class="input-field cursor-pointer">
+                                <option value="Sewing Machine">Industrial Sewing Machine</option>
+                                <option value="Overlock">Overlock Machine</option>
+                                <option value="Buttonhole">Buttonhole Machine</option>
+                                <option value="Pattern Sewer">Pattern Sewer</option>
+                                <option value="Cutting Machine">Cutting Machine</option>
+                                <option value="Other">Other Category</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Initial State</label>
+                            <select id="add-mach-status" class="input-field cursor-pointer">
+                                <option value="In Stock">In Stock (Warehouse)</option>
+                                <option value="Issued">Issued (Customer Out)</option>
+                                <option value="Maintenance">Under Maintenance</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Storage / Client Location</label>
+                            <input type="text" id="add-mach-location" required class="input-field" placeholder="e.g. Warehouse Bay 02 / MAS Holdings">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Invoice / Received Note</label>
+                            <input type="text" id="add-mach-note" class="input-field" placeholder="Import batch, invoice number, or operational note">
+                        </div>
+                    </div>
+                    <div class="pt-6 mt-4 border-t border-[#fbbf24]/20 flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('addMachineModal')" class="px-5 py-2.5 rounded-xl text-sm font-medium border border-[#fbbf24]/20 text-slate-300 hover:bg-[#fbbf24]/10 transition-colors">Cancel</button>
+                        <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#fbbf24]/20 flex items-center">Save Machine <span class="material-icons-round ml-2 text-sm font-bold">save</span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Machine Movement (IN / OUT / MAINTENANCE Transfer) -->
+    <div id="machineMovementModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-0 opacity-0 transform scale-95 transition-all duration-300">
+        <div class="glass-effect border border-[#fbbf24]/30 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-[#fbbf24]/20 flex justify-between items-center bg-[#fbbf24]/10">
+                <h3 class="text-lg font-bold text-white flex items-center" id="mach-move-title"><span class="material-icons-round mr-2 text-amber-400">sync_alt</span> Machine Stock Movement</h3>
+                <button onclick="closeModal('machineMovementModal')" class="text-slate-400 hover:text-white transition-colors"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="p-6">
+                <form id="form-machine-movement" onsubmit="handleMachineMovementSubmit(event)" class="space-y-4">
+                    <input type="hidden" id="mach-move-id">
+                    <div class="bg-[#0b0f17] p-4 rounded-xl border border-[#fbbf24]/20">
+                        <p class="text-[10px] uppercase font-bold text-amber-400 mb-1">Target Machine</p>
+                        <p class="text-base font-bold text-white" id="mach-move-display-name">Machine Model</p>
+                        <p class="text-xs font-mono text-amber-300 mt-0.5" id="mach-move-display-serial">SN: -</p>
+                        <div class="mt-2 pt-2 border-t border-[#fbbf24]/15 flex justify-between text-xs">
+                            <span class="text-slate-400">Current Status:</span>
+                            <span class="font-bold text-amber-300" id="mach-move-current-status">-</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Action / Target Status</label>
+                        <select id="mach-move-action" onchange="adjustMachineMovementFields()" class="input-field cursor-pointer">
+                            <option value="Issued">Dispatch / Issue (OUT to Customer)</option>
+                            <option value="In Stock">Return / Receive (IN to Warehouse)</option>
+                            <option value="Maintenance">Send to Maintenance / Workshop</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide" id="mach-move-location-label">Destination / Customer Name</label>
+                        <input type="text" id="mach-move-location" required class="input-field" placeholder="e.g. Brandix Casualwear / Central Stores">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Movement Reference / Remarks</label>
+                        <input type="text" id="mach-move-remarks" required class="input-field" placeholder="Gate pass number, delivery note or reason">
+                    </div>
+                    <div class="pt-4 border-t border-[#fbbf24]/20 flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('machineMovementModal')" class="px-5 py-2.5 rounded-xl text-sm font-medium border border-[#fbbf24]/20 text-slate-300 hover:bg-[#fbbf24]/10 transition-colors">Cancel</button>
+                        <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg">Confirm Movement</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate User Modal -->
+    <div id="addUserModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-0 opacity-0 transform scale-95 transition-all duration-300">
+        <div class="glass-effect border border-[#fbbf24]/30 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-[#fbbf24]/20 flex justify-between items-center bg-[#fbbf24]/10">
+                <h3 class="text-lg font-bold text-white flex items-center"><span class="material-icons-round text-amber-400 mr-2">person_add</span> Generate User Details</h3>
+                <button onclick="closeModal('addUserModal')" class="text-slate-400 hover:text-white transition-colors"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="p-6">
+                <form id="form-add-user" onsubmit="handleUserSubmit(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Authorized Username</label>
+                        <input type="text" id="add-username" required class="input-field" placeholder="Enter specific user id">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Login Password</label>
+                        <input type="password" id="add-password" required class="input-field" placeholder="Enter secure password">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Access Role</label>
+                        <select id="add-role" class="input-field cursor-pointer">
+                            <option value="user">USER (Standard Inventory Access)</option>
+                            <option value="admin">ADMINISTRATOR (Full Access)</option>
+                        </select>
+                    </div>
+                    <div class="pt-6 mt-4 border-t border-[#fbbf24]/20 flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('addUserModal')" class="px-5 py-2.5 rounded-xl text-sm font-medium border border-[#fbbf24]/20 text-slate-300 hover:bg-[#fbbf24]/10 transition-colors">Cancel</button>
+                        <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#fbbf24]/20">Authorize User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Issue / Receive Modal for Spare Parts -->
+    <div id="transactModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-0 opacity-0 transform scale-95 transition-all duration-300">
+        <div class="glass-effect border border-[#fbbf24]/30 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-[#fbbf24]/20 flex justify-between items-center bg-[#fbbf24]/10">
+                <h3 class="text-lg font-bold text-white flex items-center relative" id="transact-modal-title">
+                    <span class="material-icons-round mr-2 text-amber-400" id="transact-icon">sync_alt</span> Stock Transaction
+                </h3>
+                <button onclick="closeModal('transactModal')" class="text-slate-400 hover:text-white transition-colors"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="p-6">
+                <form id="form-transact" onsubmit="handleTransactSubmit(event)" class="space-y-5">
+                    <input type="hidden" id="transact-partId">
+                    <input type="hidden" id="transact-type">
+                    <div class="bg-[#0b0f17] p-4 rounded-xl mb-4 border border-[#fbbf24]/20 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-[#fbbf24]/10 to-transparent pointer-events-none"></div>
+                        <p class="text-[10px] uppercase font-bold text-amber-400 mb-1 tracking-wider">Operational Part Details</p>
+                        <p class="text-lg font-bold text-white leading-tight" id="transact-part-display">Part Name (Num)</p>
+                        <div class="flex justify-between items-center mt-3 pt-3 border-t border-[#fbbf24]/20">
+                            <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Available Stock Level:</span>
+                            <span class="text-xl font-black text-amber-400" id="transact-current-stock">0</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Modification Quantity</label>
+                        <input type="number" id="transact-qty" required min="1" class="input-field text-lg font-bold" placeholder="0">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-amber-200 mb-1.5 uppercase tracking-wide">Ref. Note</label>
+                        <input type="text" id="transact-note" required class="input-field" placeholder="E.g. Machine unit repair #29">
+                    </div>
+                    <div class="pt-6 mt-4 border-t border-[#fbbf24]/20 flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('transactModal')" class="px-5 py-2.5 rounded-xl text-sm font-medium border border-[#fbbf24]/20 text-slate-300 hover:bg-[#fbbf24]/10 transition-colors">Cancel</button>
+                        <button type="submit" id="transact-submit-btn" class="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg">Acknowledge</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="logo-upload" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+    <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+
+    <!-- Database Logic (Offline First + Backup) -->
+    <script>
+        // 1. IndexedDB Initialization with Dexie
+        const db = new Dexie('JackInternationalSPM_DB');
+        // මෙතන version(2) තිබුණු එක version(3) විදිහට අලුත් කළා
+        db.version(3).stores({
+            parts: '++id, name, partNum, category, stock, minStock',
+            machines: '++id, model, serial, type, status, location, lastUpdate, remarks',
+            transactions: '++id, timestamp, type, itemType, itemId, itemName, qty, note, user',
+            users: '++id, username, password, role, createdAt',
+            settings: '++id, type, value'
+        });
+
+        let currentUser = null;
+        let chartInstance = null;
+
+        // Seed Default Data on First Launch
+        async function initializeDatabase() {
+            const userCount = await db.users.count();
+            if (userCount === 0) {
+                await db.users.add({ username: 'admin', password: '123', role: 'admin', createdAt: new Date().toLocaleDateString() });
+            }
+
+            const partsCount = await db.parts.count();
+            if (partsCount === 0) {
+                await db.parts.bulkAdd([
+                    { name: 'Jack Rotary Hook Assembly', partNum: 'JK-RH-701', category: 'Mechanical', stock: 18, minStock: 5 },
+                    { name: 'Stepper Motor Driver Board', partNum: 'JK-EL-880', category: 'Electrical', stock: 4, minStock: 6 },
+                    { name: 'Tension Release Solenoid', partNum: 'JK-SL-009', category: 'Electrical', stock: 12, minStock: 4 },
+                    { name: 'Silicone Lubricant Oil 1L', partNum: 'JK-LB-010', category: 'Consumable', stock: 2, minStock: 5 }
+                ]);
+            }
+
+            const machineCount = await db.machines.count();
+            if (machineCount === 0) {
+                await db.machines.bulkAdd([
+                    { model: 'Jack A4F Computerized Lockstitch', serial: 'JK-A4F-2026-001', type: 'Sewing Machine', status: 'In Stock', location: 'Main Warehouse - Bay 01', lastUpdate: new Date().toLocaleDateString(), remarks: 'New container shipment' },
+                    { model: 'Jack C5 Direct Drive 4-Thread Overlock', serial: 'JK-C5-2026-042', type: 'Overlock', status: 'Issued', location: 'MAS Holdings - Katunayake Plant', lastUpdate: new Date().toLocaleDateString(), remarks: 'Delivered via Dispatch Note #4402' }
+                ]);
+            }
+
+            // Load stored logo
+            const logoSetting = await db.settings.where('type').equals('logo').first();
+            if (logoSetting) updateLogoUI(logoSetting.value);
+
+            // Load Cloud URL
+            const cloudSetting = await db.settings.where('type').equals('cloud_url').first();
+            if (cloudSetting) document.getElementById('cloud-api-url').value = cloudSetting.value;
+        }
+
+        // --- Auth & Session ---
+        async function populateUserDropdown() {
+            const userSelect = document.getElementById('login-username');
+            if (!userSelect) return;
+            const users = await db.users.toArray();
+            userSelect.innerHTML = '<option value="" disabled selected>Select your account</option>';
+            users.forEach(u => {
+                const option = document.createElement('option');
+                option.value = u.username;
+                option.textContent = u.username + (u.role === 'admin' ? ' (Administrator)' : ' (User)');
+                option.className = "bg-[#0c101a] text-white";
+                userSelect.appendChild(option);
+            });
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const passwordInput = document.getElementById('login-password');
+            const p = passwordInput.value.trim();
+
+            const user = await db.users.where('username').equals(u).first();
+            
+            if (user && user.password === p) {
+                currentUser = user;
+                passwordInput.value = '';
+                if (passwordInput.type === 'text') togglePassword();
+
+                document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => document.getElementById('login-screen').classList.add('hidden'), 500);
+
+                document.getElementById('header-user-name').textContent = user.username;
+                document.getElementById('header-user-role').textContent = user.role;
+                if (user.avatar) updateAvatarUI(user.avatar);
+
+                if (user.role !== 'admin') {
+                    document.getElementById('admin-nav-divider').style.display = 'none';
+                    document.getElementById('nav-users').style.display = 'none';
+                } else {
+                    document.getElementById('admin-nav-divider').style.display = 'block';
+                    document.getElementById('nav-users').style.display = 'flex';
+                }
+
+                initDashboard();
+                renderAll();
+            } else {
+                passwordInput.value = '';
+                Swal.fire({ icon: 'error', title: 'Access Denied', text: 'Invalid username or password!', confirmButtonColor: '#fbbf24' });
+            }
+        }
+
+        function logout() {
+            Swal.fire({ title: 'Confirm Secure Logout?', icon: 'question', showCancelButton: true, confirmButtonColor: '#f59e0b', cancelButtonColor: '#475569', confirmButtonText: 'Yes, Logout'
+            }).then(async (res) => {
+                if (res.isConfirmed) {
+                    currentUser = null;
+                    const pwField = document.getElementById('login-password');
+                    if (pwField) { pwField.value = ''; if (pwField.type === 'text') togglePassword(); }
+                    document.getElementById('form-login').reset();
+                    
+                    // Refresh the user list dropdown
+                    await populateUserDropdown();
+                    
+                    document.getElementById('header-avatar-img').classList.add('hidden');
+                    document.getElementById('header-avatar-icon').classList.remove('hidden');
+
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    setTimeout(() => document.getElementById('login-screen').classList.remove('opacity-0', 'pointer-events-none'), 50);
+                }
+            });
+        }
+
+        function togglePassword() {
+            const pw = document.getElementById('login-password');
+            const icon = document.getElementById('toggle-pw');
+            if (pw.type === 'password') { pw.type = 'text'; icon.textContent = 'visibility_off'; } 
+            else { pw.type = 'password'; icon.textContent = 'visibility'; }
+        }
+
+        // --- Navigation ---
+        function nav(page) {
+            document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active-nav'));
+
+            const targetPage = document.getElementById(`view-${page}`);
+            const targetNav = document.getElementById(`nav-${page}`);
+            if (targetPage) targetPage.classList.remove('hidden');
+            if (targetNav) targetNav.classList.add('active-nav');
+
+            const pageTitles = { dashboard: 'Dashboard Overview', inventory: 'Spare Parts Management', machines: 'Machine In / Out Stock Maintenance', transactions: 'Operational Activity Log', users: 'User Access Governance' };
+            document.getElementById('page-title').textContent = pageTitles[page] || 'System Portal';
+
+            if (page === 'dashboard') initDashboard();
+            if (page === 'inventory') renderInventoryTable();
+            if (page === 'machines') renderMachineTable();
+            if (page === 'transactions') renderTransactions();
+            if (page === 'users') renderUsers();
+        }
+
+        // --- Modal Helpers ---
+        function openModal(id) {
+            const m = document.getElementById(id);
+            const b = document.getElementById('modal-backdrop');
+            b.classList.remove('hidden'); m.classList.remove('hidden');
+            setTimeout(() => { b.classList.remove('opacity-0'); m.classList.remove('opacity-0', 'scale-95'); }, 10);
+        }
+        function closeModal(id) {
+            const m = document.getElementById(id);
+            const b = document.getElementById('modal-backdrop');
+            b.classList.add('opacity-0'); m.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => { b.classList.add('hidden'); m.classList.add('hidden'); }, 300);
+        }
+
+        // --- Spare Parts ---
+        async function renderInventoryTable() {
+            const query = (document.getElementById('search-part').value || '').toLowerCase();
+            const parts = await db.parts.toArray();
+            const tbody = document.getElementById('inventory-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = parts.filter(p => p.name.toLowerCase().includes(query) || p.partNum.toLowerCase().includes(query));
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">No matching spare parts found</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                const isLow = p.stock <= p.minStock;
+                const statusBadge = isLow ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">Low Stock</span>` : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">Sufficient</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-amber-400/5 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4"><p class="font-bold text-white">${p.name}</p><p class="text-xs font-mono text-amber-400">${p.partNum}</p></td>
+                    <td class="px-6 py-4 text-slate-300">${p.category}</td>
+                    <td class="px-6 py-4 text-right font-black text-base ${isLow ? 'text-rose-400' : 'text-amber-300'}">${p.stock}</td>
+                    <td class="px-6 py-4 text-right text-slate-400">${p.minStock}</td>
+                    <td class="px-6 py-4 text-center">${statusBadge}</td>
+                    <td class="px-6 py-4 text-center space-x-1 whitespace-nowrap">
+                        <button onclick="openTransactModal(${p.id}, 'in')" title="Receive (IN)" class="p-1.5 bg-amber-400/20 text-amber-300 hover:bg-amber-400 hover:text-black rounded-lg transition-colors border border-amber-400/30"><span class="material-icons-round text-base font-bold">add</span></button>
+                        <button onclick="openTransactModal(${p.id}, 'out')" title="Issue (OUT)" class="p-1.5 bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white rounded-lg transition-colors border border-rose-500/30"><span class="material-icons-round text-base font-bold">remove</span></button>
+                        <button onclick="deletePart(${p.id})" title="Delete Part" class="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg transition-colors"><span class="material-icons-round text-base">delete</span></button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function handlePartSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('add-name').value;
+            const partNum = document.getElementById('add-partNum').value;
+            const category = document.getElementById('add-category').value;
+            const stock = parseInt(document.getElementById('add-stock').value);
+            const minStock = parseInt(document.getElementById('add-minStock').value);
+
+            await db.parts.add({ name, partNum, category, stock, minStock });
+            await db.transactions.add({ timestamp: new Date().toLocaleString(), type: 'in', itemType: 'Part', itemId: partNum, itemName: name, qty: stock, note: 'Initial Registration', user: currentUser ? currentUser.username : 'admin' });
+
+            closeModal('addPartModal');
+            document.getElementById('form-add-part').reset();
+            renderInventoryTable(); initDashboard();
+            Swal.fire({ icon: 'success', title: 'Saved', text: 'New spare part added!', timer: 1500, showConfirmButton: false });
+        }
+
+        async function deletePart(id) {
+            Swal.fire({ title: 'Remove this part from registry?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Yes, delete'
+            }).then(async (res) => {
+                if (res.isConfirmed) { await db.parts.delete(id); renderInventoryTable(); initDashboard(); }
+            });
+        }
+
+        // --- Machines ---
+        async function renderMachineTable() {
+            const query = (document.getElementById('search-machine').value || '').toLowerCase();
+            const statusFilter = document.getElementById('filter-machine-status').value;
+            const typeFilter = document.getElementById('filter-machine-type').value;
+
+            const machines = await db.machines.toArray();
+            const tbody = document.getElementById('machine-table-body');
+            tbody.innerHTML = '';
+
+            const inStock = machines.filter(m => m.status === 'In Stock').length;
+            const issued = machines.filter(m => m.status === 'Issued').length;
+            const repair = machines.filter(m => m.status === 'Maintenance').length;
+
+            document.getElementById('mach-stat-total').textContent = machines.length;
+            document.getElementById('mach-stat-in-stock').textContent = inStock;
+            document.getElementById('mach-stat-issued').textContent = issued;
+            document.getElementById('mach-stat-repair').textContent = repair;
+
+            const filtered = machines.filter(m => {
+                const matchesQuery = m.model.toLowerCase().includes(query) || m.serial.toLowerCase().includes(query) || m.location.toLowerCase().includes(query);
+                const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
+                const matchesType = typeFilter === 'all' || m.type === typeFilter;
+                return matchesQuery && matchesStatus && matchesType;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">No machines match current filters</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(m => {
+                let badgeClass = m.status === 'In Stock' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : (m.status === 'Issued' ? 'bg-amber-400/20 text-amber-300 border-amber-400/40' : 'bg-rose-500/20 text-rose-300 border-rose-500/40');
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-amber-400/5 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4"><div class="flex items-center"><span class="material-icons-round text-amber-400 mr-2 text-xl">precision_manufacturing</span><div><p class="font-bold text-white">${m.model}</p><p class="text-xs text-slate-400">${m.remarks || 'Standard Setup'}</p></div></div></td>
+                    <td class="px-6 py-4 font-mono font-bold text-amber-300">${m.serial}</td>
+                    <td class="px-6 py-4 text-slate-300">${m.type}</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold border ${badgeClass}">${m.status}</span></td>
+                    <td class="px-6 py-4"><div class="flex items-center text-xs font-semibold text-slate-300"><span class="material-icons-round text-amber-400 mr-1 text-sm">place</span>${m.location}</div></td>
+                    <td class="px-6 py-4 text-center whitespace-nowrap">
+                        <button onclick="openMachineMovementModal(${m.id})" class="px-3 py-1.5 bg-gradient-to-r from-[#fbbf24] to-[#d97706] hover:brightness-110 text-black border border-amber-300/40 rounded-lg text-xs font-bold transition-all shadow-md">Move / In-Out</button>
+                        <button onclick="deleteMachine(${m.id})" title="Delete Machine" class="p-1.5 ml-1 text-slate-500 hover:text-rose-400 rounded-lg transition-colors"><span class="material-icons-round text-base">delete</span></button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function handleMachineSubmit(e) {
+            e.preventDefault();
+            const model = document.getElementById('add-mach-model').value.trim();
+            const serial = document.getElementById('add-mach-serial').value.trim().toUpperCase();
+            const type = document.getElementById('add-mach-type').value;
+            const status = document.getElementById('add-mach-status').value;
+            const location = document.getElementById('add-mach-location').value.trim();
+            const remarks = document.getElementById('add-mach-note').value.trim();
+
+            const existing = await db.machines.where('serial').equals(serial).first();
+            if (existing) return Swal.fire({ icon: 'warning', title: 'Duplicate Serial Number', text: `Serial ${serial} already exists!`, confirmButtonColor: '#fbbf24' });
+
+            await db.machines.add({ model, serial, type, status, location, lastUpdate: new Date().toLocaleDateString(), remarks });
+            await db.transactions.add({ timestamp: new Date().toLocaleString(), type: status === 'In Stock' ? 'in' : 'out', itemType: 'Machine', itemId: serial, itemName: model, qty: 1, note: `Registered: ${status} @ ${location}`, user: currentUser ? currentUser.username : 'admin' });
+
+            closeModal('addMachineModal'); document.getElementById('form-add-machine').reset();
+            renderMachineTable(); initDashboard();
+            Swal.fire({ icon: 'success', title: 'Machine Registered', text: `${model} added!`, timer: 1600, showConfirmButton: false });
+        }
+
+        async function openMachineMovementModal(id) {
+            const mach = await db.machines.get(id);
+            if (!mach) return;
+            document.getElementById('mach-move-id').value = mach.id;
+            document.getElementById('mach-move-display-name').textContent = mach.model;
+            document.getElementById('mach-move-display-serial').textContent = `SN: ${mach.serial}`;
+            document.getElementById('mach-move-current-status').textContent = mach.status;
+            const actionSelect = document.getElementById('mach-move-action');
+            if (mach.status === 'In Stock') actionSelect.value = 'Issued'; else actionSelect.value = 'In Stock';
+            adjustMachineMovementFields(); openModal('machineMovementModal');
+        }
+
+        function adjustMachineMovementFields() {
+            const action = document.getElementById('mach-move-action').value;
+            const locLabel = document.getElementById('mach-move-location-label');
+            const locInput = document.getElementById('mach-move-location');
+            if (action === 'Issued') { locLabel.textContent = 'Customer Name (OUT)'; locInput.placeholder = 'e.g. MAS Holdings'; } 
+            else if (action === 'In Stock') { locLabel.textContent = 'Warehouse Bay (IN)'; locInput.placeholder = 'e.g. Rack 4'; } 
+            else { locLabel.textContent = 'Maintenance Workshop'; locInput.placeholder = 'e.g. Service Bay 2'; }
+        }
+
+        async function handleMachineMovementSubmit(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('mach-move-id').value);
+            const newStatus = document.getElementById('mach-move-action').value;
+            const newLocation = document.getElementById('mach-move-location').value.trim();
+            const remarks = document.getElementById('mach-move-remarks').value.trim();
+
+            const mach = await db.machines.get(id);
+            if (!mach) return;
+
+            const prevStatus = mach.status;
+            await db.machines.update(id, { status: newStatus, location: newLocation, lastUpdate: new Date().toLocaleDateString(), remarks: remarks });
+            await db.transactions.add({ timestamp: new Date().toLocaleString(), type: newStatus === 'In Stock' ? 'in' : 'out', itemType: 'Machine', itemId: mach.serial, itemName: mach.model, qty: 1, note: `Status change: [${prevStatus} -> ${newStatus}] Ref: ${remarks} (@ ${newLocation})`, user: currentUser ? currentUser.username : 'admin' });
+
+            closeModal('machineMovementModal'); document.getElementById('form-machine-movement').reset();
+            renderMachineTable(); initDashboard();
+            Swal.fire({ icon: 'success', title: 'Movement Recorded', text: `${mach.serial} updated!`, timer: 1500, showConfirmButton: false });
+        }
+
+        async function deleteMachine(id) {
+            Swal.fire({ title: 'Remove this machine record?', text: 'Cannot be reversed!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Yes, delete'
+            }).then(async (res) => {
+                if (res.isConfirmed) { await db.machines.delete(id); renderMachineTable(); initDashboard(); }
+            });
+        }
+
+        // --- Transact Parts ---
+        async function openTransactModal(partId, type) {
+            const part = await db.parts.get(partId);
+            if (!part) return;
+            document.getElementById('transact-partId').value = part.id;
+            document.getElementById('transact-type').value = type;
+            document.getElementById('transact-part-display').textContent = `${part.name} (${part.partNum})`;
+            document.getElementById('transact-current-stock').textContent = part.stock;
+            document.getElementById('transact-qty').value = '';
+            document.getElementById('transact-note').value = '';
+
+            const title = document.getElementById('transact-modal-title');
+            const btn = document.getElementById('transact-submit-btn');
+            if (type === 'in') { title.innerHTML = `<span class="material-icons-round mr-2 text-amber-400 font-bold">add_circle</span> Receive Part (Stock IN)`; btn.className = "btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg"; } 
+            else { title.innerHTML = `<span class="material-icons-round mr-2 text-rose-400 font-bold">remove_circle</span> Issue Part (Stock OUT)`; btn.className = "px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-lg"; }
+            openModal('transactModal');
+        }
+
+        async function handleTransactSubmit(e) {
+            e.preventDefault();
+            const partId = parseInt(document.getElementById('transact-partId').value);
+            const type = document.getElementById('transact-type').value;
+            const qty = parseInt(document.getElementById('transact-qty').value);
+            const note = document.getElementById('transact-note').value.trim();
+
+            const part = await db.parts.get(partId);
+            if (!part) return;
+            if (type === 'out' && part.stock < qty) return Swal.fire({ icon: 'error', title: 'Insufficient Inventory', text: `Cannot issue ${qty} items. Only ${part.stock} in stock.`, confirmButtonColor: '#fbbf24' });
+
+            const newStock = type === 'in' ? part.stock + qty : part.stock - qty;
+            await db.parts.update(partId, { stock: newStock });
+            await db.transactions.add({ timestamp: new Date().toLocaleString(), type: type, itemType: 'Part', itemId: part.partNum, itemName: part.name, qty: qty, note: note, user: currentUser ? currentUser.username : 'admin' });
+
+            closeModal('transactModal'); renderInventoryTable(); initDashboard();
+            Swal.fire({ icon: 'success', title: 'Transaction Stored', text: `${qty} unit(s) ${type === 'in' ? 'received into' : 'issued from'} stock!`, timer: 1400, showConfirmButton: false });
+        }
+
+        // --- Transactions View ---
+        async function renderTransactions() {
+            const filter = document.getElementById('filter-type').value;
+            let list = await db.transactions.reverse().toArray();
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '';
+
+            if (filter === 'in') list = list.filter(t => t.type === 'in');
+            if (filter === 'out') list = list.filter(t => t.type === 'out');
+            if (filter === 'machine') list = list.filter(t => t.itemType === 'Machine');
+
+            if (list.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-400 py-6">No transaction logs registered yet.</div>`;
+                return;
+            }
+
+            list.forEach(item => {
+                const isIn = item.type === 'in';
+                const icon = item.itemType === 'Machine' ? 'precision_manufacturing' : (isIn ? 'call_received' : 'call_made');
+                const badgeColor = item.itemType === 'Machine' ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30' : (isIn ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30');
+
+                const el = document.createElement('div');
+                el.className = "relative flex items-start group";
+                el.innerHTML = `
+                    <div class="absolute -left-[33px] mt-1 w-6 h-6 rounded-full bg-[#0c101a] border-2 border-amber-400 flex items-center justify-center text-amber-400 shadow-sm"><span class="material-icons-round text-xs">${icon}</span></div>
+                    <div class="glass-effect p-4 rounded-xl border border-[#fbbf24]/20 flex-1 ml-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="font-bold text-sm text-white">${item.itemName} (${item.itemId})</span>
+                            <span class="text-[11px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${badgeColor}">${item.itemType || 'Spare'} • ${item.type.toUpperCase()} (${item.qty})</span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-1">${item.note}</p>
+                        <div class="flex justify-between items-center text-[10px] text-slate-400 mt-2 pt-2 border-t border-amber-400/10">
+                            <span>Operator: <strong class="text-amber-400">${item.user || 'admin'}</strong></span><span>${item.timestamp}</span>
+                        </div>
+                    </div>`;
+                container.appendChild(el);
+            });
+        }
+
+        // --- Users ---
+        async function renderUsers() {
+            const users = await db.users.toArray();
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-bold text-white flex items-center"><span class="material-icons-round text-amber-400 mr-2 text-lg">person</span>${u.username}</td>
+                    <td class="px-6 py-4 capitalize font-semibold ${u.role === 'admin' ? 'text-amber-400' : 'text-slate-300'}">${u.role}</td>
+                    <td class="px-6 py-4 text-xs text-slate-400">${u.createdAt || 'N/A'}</td>
+                    <td class="px-6 py-4 text-center">
+                        ${u.username === 'admin' ? '<span class="text-xs text-amber-400/60 italic">Protected</span>' : `<button onclick="deleteUser(${u.id})" class="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg transition-colors"><span class="material-icons-round text-base">delete</span></button>`}
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function handleUserSubmit(e) {
+            e.preventDefault();
+            const username = document.getElementById('add-username').value.trim();
+            const password = document.getElementById('add-password').value.trim();
+            const role = document.getElementById('add-role').value;
+
+            const existing = await db.users.where('username').equals(username).first();
+            if (existing) return Swal.fire({ icon: 'warning', title: 'User Exists', text: `User "${username}" already exists.`, confirmButtonColor: '#fbbf24' });
+
+            await db.users.add({ username, password, role, createdAt: new Date().toLocaleDateString() });
+            closeModal('addUserModal'); 
+            document.getElementById('form-add-user').reset(); 
+            renderUsers();
+            await populateUserDropdown(); // <-- අලුත් යූසර් කෙනෙක් හැදූ විගස Dropdown එක Update කරයි
+            Swal.fire({ icon: 'success', title: 'User Authorized', text: `${username} added.`, timer: 1500, showConfirmButton: false });
+        }
+
+        async function deleteUser(id) {
+            Swal.fire({ title: 'Revoke user credentials?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Yes, remove'
+            }).then(async (res) => {
+                if (res.isConfirmed) { 
+                    await db.users.delete(id); 
+                    renderUsers(); 
+                    await populateUserDropdown(); // <-- යූසර් කෙනෙක්ව අයින් කළ විගස Dropdown එක Update කරයි
+                }
+            });
+        }
+
+        // --- Dashboard Sync & Charts ---
+        async function initDashboard() {
+            const parts = await db.parts.toArray();
+            const machines = await db.machines.toArray();
+            const totalStock = parts.reduce((acc, p) => acc + (p.stock || 0), 0);
+            const lowStockParts = parts.filter(p => p.stock <= p.minStock);
+            const machinesInStock = machines.filter(m => m.status === 'In Stock').length;
+
+            document.getElementById('stat-total-parts').textContent = parts.length;
+            document.getElementById('stat-total-stock').textContent = totalStock;
+            document.getElementById('stat-low-stock').textContent = lowStockParts.length;
+            document.getElementById('stat-machines-in-stock').textContent = machinesInStock;
+
+            const lowBox = document.getElementById('low-stock-list');
+            lowBox.innerHTML = '';
+            if (lowStockParts.length === 0) {
+                lowBox.innerHTML = `<div class="text-center text-slate-400 py-10">All stock items healthy!</div>`;
+            } else {
+                lowStockParts.forEach(lp => {
+                    const d = document.createElement('div');
+                    d.className = "flex justify-between items-center p-3 mb-2 rounded-xl bg-rose-500/10 border border-rose-500/30";
+                    d.innerHTML = `<div><p class="font-bold text-xs text-white">${lp.name}</p><p class="text-[10px] font-mono text-slate-400">${lp.partNum}</p></div><div class="text-right"><span class="text-xs font-bold text-rose-400">${lp.stock} in stock</span><p class="text-[10px] text-slate-400">Min: ${lp.minStock}</p></div>`;
+                    lowBox.appendChild(d);
+                });
+            }
+            renderChart();
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('movementChart');
+            if (!ctx) return;
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        { label: 'Parts Movement (Qty)', data: [12, 19, 8, 25, 14, 20, 16], borderColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.15)', fill: true, tension: 0.35 },
+                        { label: 'Machine Dispatches', data: [2, 4, 1, 6, 3, 2, 5], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.15)', fill: true, tension: 0.35 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: '#f8fafc' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(251, 191, 36, 0.08)' } }, y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(251, 191, 36, 0.08)' } } } }
+            });
+        }
+
+        function renderAll() { renderInventoryTable(); renderMachineTable(); renderTransactions(); renderUsers(); }
+
+        // --- GOOGLE SHEETS CLOUD SYNC LOGIC (NEW) ---
+        async function saveCloudUrl() {
+            const url = document.getElementById('cloud-api-url').value.trim();
+            if (!url) return Swal.fire('Error', 'Please enter a valid URL', 'error');
+            
+            const exists = await db.settings.where('type').equals('cloud_url').first();
+            if (exists) await db.settings.update(exists.id, {value: url});
+            else await db.settings.add({type: 'cloud_url', value: url});
+            
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Cloud URL Saved!', showConfirmButton: false, timer: 1500 });
+        }
+
+        async function syncToCloud() {
+            const url = document.getElementById('cloud-api-url').value.trim();
+            if (!url) return Swal.fire('Missing API URL', 'Please enter and save your Google Cloud Web App URL first.', 'warning');
+
+            Swal.fire({ title: 'Pushing to Cloud...', html: 'Uploading data securely to Google Sheets.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            try {
+                const data = {
+                    parts: await db.parts.toArray(),
+                    machines: await db.machines.toArray(),
+                    transactions: await db.transactions.toArray(),
+                    users: await db.users.toArray(),
+                    settings: await db.settings.toArray()
+                };
+
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(data)
+                });
+
+                Swal.fire({ icon: 'success', title: 'Upload Complete!', text: 'Your database has been synced to Google Cloud.', timer: 2000, showConfirmButton: false });
+            } catch (err) {
+                console.error("Cloud Sync Error:", err);
+                Swal.fire('Sync Failed', 'Could not connect to Google Cloud. Check internet connection or URL.', 'error');
+            }
+        }
+
+        async function syncFromCloud() {
+            const url = document.getElementById('cloud-api-url').value.trim();
+            if (!url) return Swal.fire('Missing API URL', 'Please enter and save your Google Cloud Web App URL first.', 'warning');
+
+            Swal.fire({ title: 'Pulling from Cloud...', html: 'Downloading latest data from Google Sheets.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Network response was not ok");
+                const data = await response.json();
+
+                if (data && data.users) {
+                    await db.transaction('rw', db.parts, db.machines, db.transactions, db.users, db.settings, async () => {
+                        await db.parts.clear(); await db.parts.bulkAdd(data.parts || []);
+                        await db.machines.clear(); await db.machines.bulkAdd(data.machines || []);
+                        await db.transactions.clear(); await db.transactions.bulkAdd(data.transactions || []);
+                        await db.users.clear(); await db.users.bulkAdd(data.users || []);
+                        
+                        // Carefully restore settings without overwriting the Cloud URL itself
+                        if(data.settings) {
+                            const oldSettings = await db.settings.toArray();
+                            const currentUrl = oldSettings.find(s => s.type === 'cloud_url')?.value;
+                            await db.settings.clear(); 
+                            await db.settings.bulkAdd(data.settings);
+                            if(currentUrl) {
+                                const exist = await db.settings.where('type').equals('cloud_url').first();
+                                if(exist) await db.settings.update(exist.id, {value: currentUrl});
+                                else await db.settings.add({type: 'cloud_url', value: currentUrl});
+                            }
+                        }
+                    });
+                    Swal.fire('Download Complete!', 'System updated with cloud data.', 'success').then(() => location.reload());
+                } else {
+                    Swal.fire('Empty Cloud', 'No data found in Google Sheets.', 'info');
+                }
+            } catch (err) {
+                console.error("Cloud Pull Error:", err);
+                Swal.fire('Pull Failed', 'Could not download data. Make sure you have pushed data at least once.', 'error');
+            }
+        }
+
+        // --- Profile & Logo Uploads ---
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX = 200; let width = img.width; let height = img.height;
+                    if (width > height && width > MAX) { height *= MAX / width; width = MAX; } 
+                    else if (height > MAX) { width *= MAX / height; height = MAX; }
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function triggerLogoUpload(target) { if(currentUser?.role === 'admin') document.getElementById('logo-upload').click(); else Swal.fire('Denied', 'Admin access required.', 'error'); }
+        function triggerAvatarUpload() { document.getElementById('avatar-upload').click(); }
+
+        async function handleLogoUpload(e) {
+            if (e.target.files[0]) {
+                compressImage(e.target.files[0], async (base64) => {
+                    const exists = await db.settings.where('type').equals('logo').first();
+                    if(exists) await db.settings.update(exists.id, {value: base64});
+                    else await db.settings.add({type: 'logo', value: base64});
+                    updateLogoUI(base64);
+                    Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'Logo Updated', showConfirmButton: false, timer: 1500});
+                });
+            }
+        }
+
+        async function handleAvatarUpload(e) {
+            if (e.target.files[0] && currentUser) {
+                compressImage(e.target.files[0], async (base64) => {
+                    await db.users.update(currentUser.id, { avatar: base64 });
+                    currentUser.avatar = base64;
+                    updateAvatarUI(base64);
+                    Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'Profile Updated', showConfirmButton: false, timer: 1500});
+                });
+            }
+        }
+
+        function updateAvatarUI(base64) {
+            const img = document.getElementById('header-avatar-img');
+            const icon = document.getElementById('header-avatar-icon');
+            if (img && icon) { img.src = base64; img.classList.remove('hidden'); icon.classList.add('hidden'); }
+        }
+
+        function updateLogoUI(base64) {
+            ['login-logo-img', 'sidebar-logo-img'].forEach(id => {
+                const img = document.getElementById(id);
+                if (img) { img.src = base64; img.classList.remove('hidden'); }
+            });
+            ['login-logo-icon', 'sidebar-logo-icon'].forEach(id => {
+                const icon = document.getElementById(id);
+                if (icon) icon.classList.add('hidden');
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initializeDatabase();
+            
+            // Auto-pull from cloud on startup if URL exists!
+            const cloudSetting = await db.settings.where('type').equals('cloud_url').first();
+            if (cloudSetting && cloudSetting.value) {
+                // Show a loading indicator so the user knows it's syncing
+                Swal.fire({
+                    title: 'Connecting to Cloud...',
+                    text: 'Syncing latest data from Google Sheets',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                try {
+                    const response = await fetch(cloudSetting.value);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.users) {
+                            await db.transaction('rw', db.parts, db.machines, db.transactions, db.users, async () => {
+                                await db.parts.clear(); await db.parts.bulkAdd(data.parts || []);
+                                await db.machines.clear(); await db.machines.bulkAdd(data.machines || []);
+                                await db.transactions.clear(); await db.transactions.bulkAdd(data.transactions || []);
+                                await db.users.clear(); await db.users.bulkAdd(data.users || []);
+                            });
+                            Swal.close();
+                            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+                            Toast.fire({ icon: 'success', title: 'Live Data Synced!' });
+                        } else {
+                            Swal.close();
+                        }
+                    } else {
+                        Swal.close();
+                    }
+                } catch(e) { 
+                    console.log("Auto-sync failed on load", e); 
+                    Swal.close();
+                }
+            }
+
+            await populateUserDropdown();
+        });
+    </script>
+</body>
+</html>
